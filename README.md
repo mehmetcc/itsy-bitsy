@@ -1,6 +1,6 @@
 # itsy-bitsy
 itsy-bitsy is a (very) parallel and (very) simple web crawler. Powered by zio 2, it initially started as a project to 
-port [this](https://www.youtube.com/watch?v=08eSR0vn4Vw) amazing lecture by John De Goes from scalaz-zio into zio 2.
+port [this](https://www.youtube.com/watch?v=08eSR0vn4Vw) amazing lecture by John De Goes from scalaz-zio into latest zio version.
 As such, many similarities can be found with the original code.
 
 ## Configuration
