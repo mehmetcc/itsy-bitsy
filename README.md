@@ -23,6 +23,6 @@ Processor: (URL, Document) => Task[Unit]
 ```
 First method takes care of the links to follow, and the second method takes care of how the content is being processed.
 For example, if you want to filter some links with some predicate, Router should be used, whereas if you want to process
- the content of the page (ie. save contents to database), Processor should be used. These signatures can be found an edited
+ the content of the page (ie. save contents to database), Processor should be used. These signatures can be found and edited
 inside Main.scala.
 2. After setting proper methods, run the project with sbt.
