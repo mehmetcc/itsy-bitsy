@@ -2,7 +2,7 @@ package spider
 
 import http.{Page, URL}
 import org.jsoup.nodes.Document
-import zio.{IO, Ref, Task, ULayer, ZIO, ZLayer}
+import zio.{IO, Ref, Task, UIO, ULayer, ZIO, ZLayer}
 
 trait Spider {
   def visit[E](seeds: Set[URL], router: URL => Set[URL], processor: (URL, Document) => IO[E, Unit])(
@@ -42,19 +42,22 @@ case class SpiderLive() extends Spider {
   private def visitOnce[E](seed: URL, router: URL => Set[URL], processor: (URL, Document) => IO[E, Unit])(
     ref: Ref[SpiderState[E]]
   ): Task[Set[URL]] =
-      for {
-        _      <- ZIO.log("Processing: " + seed.url)
-        page   <- ZIO.fromOption(Page.make(seed)).orElse(ZIO.succeed(Page.empty))
-        scraped = page.extractURLs.flatMap(router)
-        either <- processor(seed, page.document).either
-        newURLs <- ref.modify(state =>
-                     (
-                       scraped -- state.visited, {
-                         val s2 = state.visitAll(scraped); either.fold(s2.logError, _ => s2)
-                       }
-                     )
-                   )
-      } yield newURLs
+    for {
+      _       <- ZIO.log("Processing: " + seed.url)
+      page    <- ZIO.fromOption(Page.make(seed)).orElse(ZIO.succeed(Page.empty))
+      scraped  = page.extractURLs.flatMap(router)
+      either  <- processor(seed, page.document).either
+      newURLs <- getDifference(ref, scraped, either)
+    } yield newURLs
+
+  private def getDifference[E](ref: Ref[SpiderState[E]], scraped: Set[URL], processed: Either[E, Unit]): UIO[Set[URL]] =
+    ref.modify(state =>
+      (
+        scraped -- state.visited, {
+          val s2 = state.visitAll(scraped); processed.fold(s2.logError, _ => s2)
+        }
+      )
+    )
 }
 
 object SpiderLive {
