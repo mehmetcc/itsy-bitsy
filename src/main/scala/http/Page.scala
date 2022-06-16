@@ -29,6 +29,6 @@ object Page {
       .map(Page(_))
 
   def empty: Page = Page(
-    Jsoup.parse("<html><head><title>First parse</title></head><body></body></html>")
+    Jsoup.parse("<html><head><title>Empty Page</title></head><body></body></html>")
   )
 }
