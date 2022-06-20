@@ -26,7 +26,7 @@ case class SpiderLive() extends Spider {
     processor: (URL, Document) => IO[E, Unit]
   )(maxNumberOfFibers: Int): Task[List[E]] = for {
     ref     <- Ref.make(SpiderState(seeds, List.empty[E]))
-    compute <- ZIO.attemptBlocking(visitParallelN(seeds, router, processor)(ref, maxNumberOfFibers)).flatten
+    compute <- ZIO.attempt(visitParallelN(seeds, router, processor)(ref, maxNumberOfFibers)).flatten
     state   <- ref.get
   } yield state.errors
 
